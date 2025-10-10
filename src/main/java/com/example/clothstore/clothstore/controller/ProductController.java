@@ -30,7 +30,7 @@ public class ProductController {
         return productService.getById(product_id);
     }
 
-    @PostMapping("/{add-product-id")
+    @PostMapping("/{add-product-id}")
     public Product postProduct(@RequestBody Product product,Long category_id){
         return productService.addProduct(product,category_id);
     }

@@ -24,7 +24,7 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "users")
     @JsonIgnore
     private List<Order> orders;
 }
