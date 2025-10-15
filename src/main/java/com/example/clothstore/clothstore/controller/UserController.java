@@ -1,5 +1,7 @@
 package com.example.clothstore.clothstore.controller;
 
+import com.example.clothstore.clothstore.dto.mapper.request.UserDto;
+import com.example.clothstore.clothstore.dto.mapper.responce.UserResponseDto;
 import com.example.clothstore.clothstore.entity.User;
 import com.example.clothstore.clothstore.service.UserService;
 import jakarta.annotation.PostConstruct;
@@ -17,19 +19,19 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id){
+    public UserResponseDto getById(@PathVariable Long id){
         return userService.getById(id);
     }
 
     @PostMapping("/{register}")
-    public User postUser(@RequestBody User user){
+    public UserResponseDto postUser(@RequestBody UserDto user){
         return userService.addUser(user);
     }
 
     @PutMapping("/{edit}")
-    public User putUser(
+    public UserResponseDto putUser(
             @PathVariable Long user_id,
-            @RequestBody User user){
+            @RequestBody UserDto user){
         return userService.updateUser(user_id,user);
     }
 

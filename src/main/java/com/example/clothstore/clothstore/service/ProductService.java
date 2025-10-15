@@ -1,5 +1,8 @@
 package com.example.clothstore.clothstore.service;
 
+import com.example.clothstore.clothstore.dto.mapper.ProductMapper;
+import com.example.clothstore.clothstore.dto.mapper.request.ProductDto;
+import com.example.clothstore.clothstore.dto.mapper.responce.ProductResponseDto;
 import com.example.clothstore.clothstore.entity.Category;
 import com.example.clothstore.clothstore.entity.Product;
 
@@ -21,39 +24,47 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponseDto> getAllProducts() {
+       List<Product> products = productRepository.findAll();
+       return products.stream()
+               .map(productMapper::toDto)
+               .toList();
     }
 
-    public Product getById(Long id) {
-        return productRepository.findById(id)
+    public ProductResponseDto getById(Long productId) {
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BadRequestException("Нету данного товара!"));
+        return productMapper.toDto(product);
     }
 
 
     @Transactional
-    public Product addProduct(Product product, Long category_id) {
-        Category category = categoryRepository.findById(category_id)
+    public ProductResponseDto addProduct(ProductDto productDto) {
+        Category category = categoryRepository.findById(productDto.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("Нету такой категории!"));
 
-        product.setCategory(category);
-        return productRepository.save(product);
+        Product product = productMapper.toEntity(productDto);
+        productRepository.save(product);
+        return productMapper.toDto(product);
     }
 
     @Transactional
-    public Product updateProduct(Long product_id, Product product, Long category_id) {
-        Product p = productRepository.findById(product_id)
+    public ProductResponseDto updateProduct(Long product_id, ProductDto productDto, Long categoryId) {
+        Product product = productRepository.findById(product_id)
                 .orElseThrow(() -> new BadRequestException("Нету данного товара!"));
-        Category category = categoryRepository.findById(category_id)
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BadRequestException("Категория не найдена!"));
 
-        p.setName(product.getName());
-        p.setDescription(product.getDescription());
-        p.setPrice(product.getPrice());
-        p.setCategory(category);
-        return productRepository.save(p);
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setPrice(productDto.getPrice());
+        product.setCategory(category);
+        productRepository.save(product);
+        return productMapper.toDto(product);
+
     }
 
     @Transactional

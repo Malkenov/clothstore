@@ -1,5 +1,8 @@
 package com.example.clothstore.clothstore.service;
 
+import com.example.clothstore.clothstore.dto.mapper.UserMapper;
+import com.example.clothstore.clothstore.dto.mapper.request.UserDto;
+import com.example.clothstore.clothstore.dto.mapper.responce.UserResponseDto;
 import com.example.clothstore.clothstore.entity.User;
 
 import com.example.clothstore.clothstore.exception.BadRequestException;
@@ -9,6 +12,7 @@ import com.example.clothstore.clothstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,27 +21,40 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAll() {
+        List<User> user = userRepository.findAll();
+        return user.stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 
-    public User getById(Long id) {
-        return userRepository.findById(id)
+    public UserResponseDto getById(Long user_id) {
+        User user = userRepository.findById(user_id)
                 .orElseThrow(() -> new BadRequestException("Нету такого пользователя"));
+        return userMapper.toDto(user);
     }
 
-    public User addUser(User user) {
-        return userRepository.save(user);
+    @Transactional
+    public UserResponseDto addUser(UserDto userDto) {
+        User user = userMapper.toEntity(userDto);
+        userRepository.save(user);
+        return userMapper.toDto(user);
     }
 
-    public User updateUser(Long user_id, User user) {
-        User u = userRepository.findById(user_id)
+    @Transactional
+    public UserResponseDto updateUser(Long user_id, UserDto userDto) {
+        User user = userRepository.findById(user_id)
                 .orElseThrow(() -> new BadRequestException("Нету этого пользователя"));
-        u.setName(user.getName());
-        return userRepository.save(u);
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        userRepository.save(user);
+        return userMapper.toDto(user);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);

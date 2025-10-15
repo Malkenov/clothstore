@@ -1,11 +1,11 @@
-package com.example.clothstore.clothstore.dto;
+package com.example.clothstore.clothstore.dto.mapper.responce;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class ProductDto {
+public class ProductResponseDto {
 
     private String name;
     private String description;

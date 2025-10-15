@@ -1,4 +1,4 @@
-package com.example.clothstore.clothstore.dto;
+package com.example.clothstore.clothstore.dto.mapper.request;
 
 import lombok.Data;
 

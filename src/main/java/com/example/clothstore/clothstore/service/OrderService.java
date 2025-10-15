@@ -1,5 +1,8 @@
 package com.example.clothstore.clothstore.service;
 
+import com.example.clothstore.clothstore.dto.mapper.OrderMapper;
+import com.example.clothstore.clothstore.dto.mapper.request.OrderDto;
+import com.example.clothstore.clothstore.dto.mapper.responce.OrderResponseDto;
 import com.example.clothstore.clothstore.entity.Order;
 import com.example.clothstore.clothstore.entity.Product;
 import com.example.clothstore.clothstore.entity.User;
@@ -26,16 +29,19 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderMapper orderMapper;
 
 
-    public Order getById(Long order_id) {
-        return orderRepository.findById(order_id)
+
+    public OrderResponseDto getById(Long order_id) {
+        Order order = orderRepository.findById(order_id)
                 .orElseThrow(() -> new NotFoundException("Нету такого заказа"));
+        return orderMapper.toDto(order);
     }
 
     @Transactional
-    public Order addOrder(Long user_id, List<Long> products) {
-        User user = userRepository.findById(user_id)
+    public OrderResponseDto addOrder(Long userId, List<Long> products) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("Нету такого пользователя!"));
         List<Product> productList = productRepository.findAllById(products);
         if (productList.isEmpty()) {
@@ -46,7 +52,8 @@ public class OrderService {
         order.setOrderDate(LocalDate.now());
         order.setUsers(user);
         order.setStatus(OrderStatus.NEW);
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        return orderMapper.toDto(order);
     }
 
     @Transactional
