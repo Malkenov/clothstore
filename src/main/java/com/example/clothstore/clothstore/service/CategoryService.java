@@ -1,5 +1,7 @@
 package com.example.clothstore.clothstore.service;
 
+import com.example.clothstore.clothstore.dto.mapper.request.CategoryDto;
+import com.example.clothstore.clothstore.dto.mapper.responce.CategoryResponseDto;
 import com.example.clothstore.clothstore.entity.Category;
 import com.example.clothstore.clothstore.exception.BadRequestException;
 import com.example.clothstore.clothstore.repository.CategoryRepository;
@@ -29,7 +31,7 @@ public class CategoryService {
 
     @Transactional
     public Category addCategory(Category category) {
-        return categoryRepository.save(category);
+       return categoryRepository.save(category);
     }
 
     @Transactional
